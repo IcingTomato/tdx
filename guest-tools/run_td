@@ -71,12 +71,11 @@ def prepare_gpus(gpus):
 def add_gpus(cmd, gpus):
     if len(gpus) <= 0:
         return
-    prepare_gpus(gpus)
-    index=0
+    cmd.extend(['-object', 'iommufd,id=iommufd0'])
+    index = 0
     for gpu in gpus:
-        gpu_cmd = ['-object', f'iommufd,id=iommufd{index}',
-                   '-device', f'pcie-root-port,id=pci.{index},bus=pcie.{index}',
-		   '-device', f'vfio-pci,host={gpu},bus=pci.{index},iommufd=iommufd{index}']
+        gpu_cmd =  ['-device', f'pcie-root-port,id=pci.{index + 10},bus=pcie.0,chassis={index + 10}',
+                    '-device', f'vfio-pci,host={gpu},bus=pci.{index + 10},iommufd=iommufd0']
         cmd.extend(gpu_cmd)
         index = index + 1
 
